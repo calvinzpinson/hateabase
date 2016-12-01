@@ -1,0 +1,13 @@
+# Python compiled files
+*.pyc
+
+# Secret/config files (aka anything that shouldn't be in the git repo)
+*.sec
+*.config
+
+# Virtualenv files
+.Python
+bin/*
+include/*
+lib/*
+pip-selfcheck.json
