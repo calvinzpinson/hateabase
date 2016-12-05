@@ -90,11 +90,37 @@ def writeIncidentSql(incidentsAndORIs, incidentSqlFile, irRecord):
 
 def validateIncident(irRecord, incidentsAndORIs):
     validOffenderRaceCodes = ["W", "B", "I", "A", "M", "U"]
+
+    validOffenseCodes = ["200","13A","13B","13C","510","220","250","290","35A",
+                        "35B","270","210","26A","26B","26C","26D","26E","39A",
+                        "39B", "39C", "39D", "09A", "09B", "09B","09C","100",
+                        "23A","23B", "23C", "23D", "23E","23F","23G","23H",
+                        "240","370","40A","40B","120","11A","11B","11C","11D",
+                        "36A","36B","280","520"]
+
+    validBiasMotivationCodes = ["11", "12", "13", "14", "15"
+                                "21", "22", "23", "24", "25", "26", "27"
+                                "32", "33"
+                                "41", "42", "43", "44", "45"]
+
+    validVictimTypeCodes = ["I", "B", "F", "G", "R", "S", "O", "U"]
+    offenseOrdinal = 1
+    result = False
+
     if ((irRecord["IncidentNumber"] + irRecord["ORI"]) not in incidentsAndORIs and
         irRecord["OffenderRace"] in validOffenderRaceCodes):
-        return True
+        while(offenseOrdinal <= 10):
+            offenseCode = "OffenseCode" + str(offenseOrdinal)
+            biasMotivation = "BiasMotivation" + str(offenseOrdinal)
+            victimType = "VictimType" + str(offenseOrdinal)
+            #make sure at least one of the offense records is valid
+            if(irRecord[offenseCode] and irRecord[offenseCode] in validOffenseCodes and
+               irRecord[biasMotivation] in validBiasMotivationCodes and
+               irRecord[victimType] in validVictimTypeCodes):
+                result =  True
+            offenseOrdinal += 1
 
-    return False
+    return result
 
 def generateIncidentSql(incidentSql, irRecord):
     incidentSql = incidentSql.replace("{ORI}", irRecord["ORI"])
@@ -113,9 +139,6 @@ def writeOffenseSql(offenseFile, irRecord, incidentsAndORIs):
                                   "'{OffenseCode}', '{NumberOfVictims}', "
                                   "'{BiasMotivation}', '{VictimType}');\n")
     while (offenseOrdinal <= 10):
-        offenseCode = "OffenseCode" + str(offenseOrdinal)
-        biasMotivation = "BiasMotivation" + str(offenseOrdinal)
-        victimType = "VictimType" + str(offenseOrdinal)
         if (validateOffense(irRecord, offenseOrdinal, incidentsAndORIs)):
             offenseSql = generateOffenseSql(offenseSqlTemplate, irRecord, str(offenseOrdinal))
             offenseFile.write(offenseSql)
@@ -160,9 +183,8 @@ def generateOffenseSql(offenseSql, irRecord, offenseOrdinal):
     offenseSql = offenseSql.replace("{NumberOfVictims}", irRecord[numberOfVictims])
     offenseSql = offenseSql.replace("{BiasMotivation}", irRecord[biasMotivation])
     offenseSql = offenseSql.replace("{VictimType}", irRecord[victimType])
-    
-
     return offenseSql
+
 def main():
     try:
         with open("HC 2014 Book Master.TXT") as hcFile:
