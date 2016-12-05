@@ -45,8 +45,8 @@ CREATE TABLE Incidents
 	IncidentId VARCHAR(30),
 	IncidentDate DATE,
 	TotalVictims INT,
-	OffenderRaceId CHAR(1),
 	TotalOffenders INT,
+	OffenderRaceId CHAR(1),
 	FOREIGN KEY (OffenderRaceId) REFERENCES OffenderRace(OffenderRaceId),
     CONSTRAINT pk_ORIAndIncidentId PRIMARY KEY (ORI, IncidentId)
 );

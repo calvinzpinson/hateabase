@@ -14,8 +14,8 @@ def analyzeHCFile(hcFile):
             irRecord["IncidentNumber"] = record[13:25]
             irRecord["IncidentDate"] = record[25:33]
             irRecord["TotalVictims"] = record[35:38]
-            irRecord["TotalOffenders"] = record[40]
-            irRecord["OffenderRace"] = record[41]
+            irRecord["TotalOffenders"] = record[38:40]
+            irRecord["OffenderRace"] = record[40]
             irRecord["OffenseCode1"] = record[41:44]
             irRecord["NumberOfVictims1"] = record[44:47]
             irRecord["BiasMotivation1"] = record[49:51]
@@ -65,12 +65,11 @@ def writeSql(hcInfo):
     try:
         with open("Incidents-INSERT.sql", "w") as incidentSqlFile, \
              open("Offenses-INSERT.sql", "w") as offenseSqlFile:
-            incidents = []
-            ORIs = []
+            incidentsAndORIs = []
             for irRecord in hcInfo:
                 stripAllWhiteSpace(irRecord)
-                writeIncidentSql(incidents, incidentSqlFile, irRecord, ORIs)
-                writeOffenseSql(offenseSqlFile, irRecord)
+                writeIncidentSql(incidentsAndORIs, incidentSqlFile, irRecord)
+                writeOffenseSql(offenseSqlFile, irRecord, incidentsAndORIs)
                     
     except IOError:
         print("Unable open files for writing")
@@ -79,17 +78,23 @@ def stripAllWhiteSpace(irRecord):
     for key in irRecord:
         irRecord[key] = irRecord[key].strip()
 
-def writeIncidentSql(incidents, incidentSqlFile, irRecord, ORIs):
-    if (irRecord["IncidentNumber"] not in incidents or \
-        irRecord["ORI"] not in ORIs):
+def writeIncidentSql(incidentsAndORIs, incidentSqlFile, irRecord):
+    if (validateIncident(irRecord, incidentsAndORIs)):
         incidentSqlTemplate = ("INSERT INTO Incidents\n"
                                "VALUES ('{ORI}', '{IncidentNumber}', '{IncidentDate}', "
                                        "'{TotalVictims}', '{TotalOffenders}', "
                                        "'{OffenderRace}');\n")
         incidentSql = generateIncidentSql(incidentSqlTemplate, irRecord)
         incidentSqlFile.write(incidentSql)
-        incidents.append(irRecord["IncidentNumber"])
-        ORIs.append(irRecord["ORI"])
+        incidentsAndORIs.append(irRecord["IncidentNumber"] + irRecord["ORI"])
+
+def validateIncident(irRecord, incidentsAndORIs):
+    validOffenderRaceCodes = ["W", "B", "I", "A", "M", "U"]
+    if ((irRecord["IncidentNumber"] + irRecord["ORI"]) not in incidentsAndORIs and
+        irRecord["OffenderRace"] in validOffenderRaceCodes):
+        return True
+
+    return False
 
 def generateIncidentSql(incidentSql, irRecord):
     incidentSql = incidentSql.replace("{ORI}", irRecord["ORI"])
@@ -101,7 +106,7 @@ def generateIncidentSql(incidentSql, irRecord):
 
     return incidentSql
 
-def writeOffenseSql(offenseFile, irRecord):
+def writeOffenseSql(offenseFile, irRecord, incidentsAndORIs):
     offenseOrdinal = 1
     offenseSqlTemplate = ("INSERT INTO Offenses\n"
                           "VALUES ('{ORI}', '{IncidentNumber}', '{Ordinal}', "
@@ -109,10 +114,39 @@ def writeOffenseSql(offenseFile, irRecord):
                                   "'{BiasMotivation}', '{VictimType}');\n")
     while (offenseOrdinal <= 10):
         offenseCode = "OffenseCode" + str(offenseOrdinal)
-        if (irRecord[offenseCode]):
+        biasMotivation = "BiasMotivation" + str(offenseOrdinal)
+        victimType = "VictimType" + str(offenseOrdinal)
+        if (validateOffense(irRecord, offenseOrdinal, incidentsAndORIs)):
             offenseSql = generateOffenseSql(offenseSqlTemplate, irRecord, str(offenseOrdinal))
             offenseFile.write(offenseSql)
         offenseOrdinal += 1
+
+def validateOffense(irRecord, offenseOrdinal, incidentsAndORIs):
+    validOffenseCodes = ["200","13A","13B","13C","510","220","250","290","35A",
+                        "35B","270","210","26A","26B","26C","26D","26E","39A",
+                        "39B", "39C", "39D", "09A", "09B", "09B","09C","100",
+                        "23A","23B", "23C", "23D", "23E","23F","23G","23H",
+                        "240","370","40A","40B","120","11A","11B","11C","11D",
+                        "36A","36B","280","520"]
+
+    validBiasMotivationCodes = ["11", "12", "13", "14", "15"
+                                "21", "22", "23", "24", "25", "26", "27"
+                                "32", "33"
+                                "41", "42", "43", "44", "45"]
+
+    validVictimTypeCodes = ["I", "B", "F", "G", "R", "S", "O", "U"]
+    
+    offenseCode = "OffenseCode" + str(offenseOrdinal)
+    biasMotivation = "BiasMotivation" + str(offenseOrdinal)
+    victimType = "VictimType" + str(offenseOrdinal)
+
+    if(irRecord[offenseCode] and irRecord[offenseCode] in validOffenseCodes and
+       irRecord[biasMotivation] in validBiasMotivationCodes and
+       irRecord[victimType] in validVictimTypeCodes and
+       irRecord["IncidentNumber"] + irRecord["ORI"] in incidentsAndORIs):
+       return True
+
+    return False
 
 def generateOffenseSql(offenseSql, irRecord, offenseOrdinal):
     offenseCode = "OffenseCode" + offenseOrdinal
