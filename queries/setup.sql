@@ -68,3 +68,12 @@ CREATE TABLE Offenses
 	BiasMotivations(BiasMotivationId),
 	FOREIGN KEY (VictimTypeId) REFERENCES VictimTypes(VictimTypeId)
 );
+
+-- source VictimTypes-INSERT.sql;
+-- source BiasMotivationGroups-INSERT.sql;
+-- source BiasMotivations-INSERT.sql;
+-- source OffenseTypeGroups-INSERT.sql;
+-- source OffenseTypes-INSERT.sql;
+-- source OffenderRace-INSERT.sql;
+-- source Incidents-INSERT.sql;
+-- source Offenses-INSERT.sql;

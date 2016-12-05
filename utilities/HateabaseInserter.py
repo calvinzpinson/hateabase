@@ -80,7 +80,7 @@ def stripAllWhiteSpace(irRecord):
         irRecord[key] = irRecord[key].strip()
 
 def writeIncidentSql(incidents, incidentSqlFile, irRecord, ORIs):
-    if (irRecord["IncidentNumber"] not in incidents and \
+    if (irRecord["IncidentNumber"] not in incidents or \
         irRecord["ORI"] not in ORIs):
         incidentSqlTemplate = ("INSERT INTO Incidents\n"
                                "VALUES ('{ORI}', '{IncidentNumber}', '{IncidentDate}', "
