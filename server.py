@@ -1,16 +1,14 @@
-from sys import exit as die
+from sys import argv, exit as die
 import pip
 
 try:
     from mysql.connector import connect
-    from flask import Flask, request, session, g, redirect, url_for, abort, \
-         render_template, flash
+    from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 except:
     try:
         pip.main(['install','-r','requirements.pip'])
         from mysql.connector import connect
-        from flask import Flask, request, session, g, redirect, url_for, abort, \
-             render_template, flash
+        from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
     except:
         die(-1)
 
@@ -22,7 +20,10 @@ def home():
     return render_template('index.html')
 
 def main():
-    app.run()
+    port_num = 5000
+    if len(argv) == 2:
+        port_num = int(argv[1])
+    app.run(port=port_num)
 
 if __name__ == '__main__':
     main()
