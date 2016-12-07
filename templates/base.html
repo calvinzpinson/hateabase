@@ -7,6 +7,19 @@
     </head>
     <body>
         {% block body %}
+            <h1>Hateabase</h1>
+            <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
+            <h3>View data from:</h3>
+            <form name="Category" action="" method='POST'>
+                <select name="Category">
+                    <option value="Bias">Bias</option>
+                    <option value="Victim">Victim</option>
+                </select>
+                <button type="submit">View</button>
+            </form>
+            {% if result %}
+                <h2>{{ result }} </h1>
+            {% endif %}
         {% endblock %}
     </body>
 </html>
