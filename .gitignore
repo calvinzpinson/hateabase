@@ -4,6 +4,7 @@
 # Secret/config files (aka anything that shouldn't be in the git repo)
 *.sec
 *.config
+settings.json
 
 # Virtualenv files
 .Python
