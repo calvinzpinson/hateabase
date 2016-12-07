@@ -19,6 +19,7 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def home():
+    get_db()
     return render_template('index.html')
 
 @app.route('/hateabase/', methods=['POST', 'GET'])
@@ -29,6 +30,11 @@ def hateabase():
         result = ""
     return render_template('base.html', result=result)
 
+def get_db():
+    if not hasattr(g, "mysql_db"):
+        g.mysql_db = connect()
+    return g.mysql_db
+        
 def connect():
     configParser = configparser.ConfigParser()
     configFilePath = "./dbconf.365"
@@ -50,12 +56,16 @@ def connect():
         exit(-1)
 
     return conn
-    
+
+@app.teardown_appcontext
+def close_db(error):
+    if hasattr(g, "mysql_db"):
+        g.mysql_db.close()    
+
 def main():
     port_num = 5000
     if len(argv) == 2:
         port_num = int(argv[1])
-    conn = connect()
     app.run(port=port_num)
 
 if __name__ == '__main__':
