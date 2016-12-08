@@ -10,3 +10,8 @@ userid = cpinson
 database = cpinson
 password = 9760805
 
+[SQL]
+destroy = ./queries/destroy.sql
+setup = ./queries/setup.sql
+insert = ./queries/insert.sql
+
