@@ -3,7 +3,7 @@ import pip, configparser
 
 try:
     import mysql.connector
-    from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+    from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 except:
     print("Missing requirements\n")
     die(-1)
@@ -13,8 +13,8 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def home():
-    test()
-    return render_template('index.html')
+    return test()
+    #return render_template('index.html')
 
 @app.route('/hateabase/', methods=['POST', 'GET'])
 def hateabase():
@@ -56,40 +56,68 @@ def getConfigData():
 
     return configParser
 
+def insertValues():
+    configData = getConfigData()
+    queryFiles = [configData.get("SQL", "insert")]
+
+    for queryFile in queryFiles:
+        executeSqlFromFile(queryFile)
+
+def initializeDatabase():
+
+    configData = getConfigData()
+    queryFiles = [configData.get("SQL", "create"), 
+                  configData.get("SQL", "insert")]
+
+    for queryFile in queryFiles:
+        executeSqlFromFile(queryFile)
+
 def reInitializeDatabase():
-    
-    db = get_db()
+
     configData = getConfigData()
     queryFiles = [configData.get("SQL", "destroy"), 
                   configData.get("SQL", "create"), 
                   configData.get("SQL", "insert")]
 
     for queryFile in queryFiles:
-        executeSqlFromFile(queryFile, db)
+        executeSqlFromFile(queryFile)
 
-def executeSqlFromFile(file, db):
+def read(SQL):
     try:
-        with open("./queries/" + file, 'r') as fd:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(SQL)
+        return cursor.fetchall()
+    except mysql.connector.Error:
+        print("Failed to execute query")
+    finally:
+        cursor.close()
+
+def executeQuery(SQL):
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(SQL)
+    except mysql.connector.Error:
+        print("Failed to execute query")
+    finally:
+        cursor.close()
+
+def executeSqlFromFile(file):
+    try:
+        with open(file, 'r') as fd:
             sqlFile = fd.read()
             queries = sqlFile.split(";")
-            cursor = db.cursor()
             for query in queries:
-                try:
-                    cursor.execute(query)
-                except OperationalError:
-                    print("Failed to execute sql from file: ")
+                executeQuery(query)
 
     except IOError:
         print("Failed to open sql file")
         exit(-1)
-    finally:
-        cursor.close()
 
 def test():
-    SQL = "CREATE TABLE HelloWorld (hello VARCHAR(10), world VARCHAR(10));"
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute(SQL)
+    SQL = "SELECT * FROM  OffenseTypes;"
+    return jsonify(read(SQL))
 
 @app.teardown_appcontext
 def close_db(error):
