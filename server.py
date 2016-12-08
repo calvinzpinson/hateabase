@@ -2,16 +2,10 @@ from sys import argv, exit as die
 import pip, configparser
 
 try:
-    #from mysql.connector import connect
     import mysql.connector
     from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 except:
     print("Missing requirements\n")
-    #try:
-        #pip.main(['install','-r','requirements.pip'])
-        #from mysql.connector import connect
-        #from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-    #except:
     die(-1)
 
 app = Flask(__name__)
@@ -19,7 +13,6 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def home():
-    get_db()
     return render_template('index.html')
 
 @app.route('/hateabase/', methods=['POST', 'GET'])
@@ -29,6 +22,10 @@ def hateabase():
     else:
         result = ""
     return render_template('base.html', result=result)
+
+def reset():
+    db = get_db()
+    
 
 def get_db():
     if not hasattr(g, "mysql_db"):
@@ -40,10 +37,10 @@ def connect():
     configFilePath = "./dbconf.365"
     configParser.read(configFilePath)
 
-    host = configParser.get("Hateabase",'host')
-    user = configParser.get("Hateabase",'userid')
-    password = configParser.get("Hateabase",'password')
-    database = configParser.get("Hateabase", 'database')
+    host = configParser.get("CSLVM",'host')
+    user = configParser.get("CSLVM",'userid')
+    password = configParser.get("CSLVM",'password')
+    database = configParser.get("CSLVM", 'database')
 
     try:
         conn = mysql.connector.connect(
@@ -66,6 +63,7 @@ def main():
     port_num = 5000
     if len(argv) == 2:
         port_num = int(argv[1])
+    connect()
     app.run(port=port_num)
 
 if __name__ == '__main__':

@@ -1,5 +1,12 @@
-[Hateabase]
+[DigitalOcean]
 host = 138.197.197.24
 userid = hbUser
 password = 1UDw8aInqLhZAo6VOgqn
 database = HateabaseDB
+
+[CSLVM]
+host = cslvm74.csc.calpoly.edu
+userid = cpinson
+database = cpinson
+password = 9760805
+
