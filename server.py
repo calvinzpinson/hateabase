@@ -13,8 +13,8 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def home():
-    reInitializeDatabase()
-    return render_template('index.html')
+    return test()
+    #return render_template('index.html')
 
 @app.route('/hateabase/', methods=['POST', 'GET'])
 def hateabase():
@@ -24,10 +24,24 @@ def hateabase():
         result = ""
     return render_template('base.html', result=result)
 
+@app.route('/hateabase/api/v1.0/getgroup')
+
 def get_db():
     if not hasattr(g, "mysql_db"):
         g.mysql_db = connect()
     return g.mysql_db
+
+def read(SQL, parameters):
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(SQL, parameters)
+        db.commit()
+        return cursor.fetchall()
+    except mysql.connector.Error as e:
+        print("Failed to execute query: " + str(e))
+    finally:
+        cursor.close()
         
 def connect():
     configData = getConfigData()
@@ -105,10 +119,11 @@ def reInitializeDatabase():
 def read(SQL):
     try:
         db = get_db()
-        cursor = db.cursor()
+        cursor = db.cursor(buffered=True, dictionary=True)
         cursor.execute(SQL)
         db.commit()
-        return cursor.fetchall()
+        result = cursor.fetchall()
+        return result
     except mysql.connector.Error as e:
         print("Failed to execute query: " + str(e))
     finally:
@@ -138,8 +153,8 @@ def executeSqlFromFile(file):
         exit(-1)
 
 def test():
-    SQL = "SELECT * FROM  OffenseTypes;"
-    return jsonify(read(SQL))
+    SQL = "SELECT * FROM  OffenseTypes"
+    return jsonify({"OffenseTypes":read(SQL)})
 
 def test2():
     configData = getConfigData()
