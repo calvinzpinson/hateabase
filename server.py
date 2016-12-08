@@ -13,8 +13,8 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def home():
-    return test()
-    #return render_template('index.html')
+    reInitializeDatabase()
+    return render_template('index.html')
 
 @app.route('/hateabase/', methods=['POST', 'GET'])
 def hateabase():
@@ -72,6 +72,26 @@ def initializeDatabase():
     for queryFile in queryFiles:
         executeSqlFromFile(queryFile)
 
+def createTables():
+
+    configData = getConfigData()
+    queryFiles = [configData.get("SQL", "create")]
+
+    for queryFile in queryFiles:
+        executeSqlFromFile(queryFile)
+
+def destroyDatabase():
+    configData = getConfigData()
+    queryFiles = [configData.get("SQL", "destroy")]
+
+    for queryFile in queryFiles:
+        executeSqlFromFile(queryFile)
+
+def testInsert():
+    SQL = "INSERT INTO VictimTypes VALUES ('B', 'po')"
+    return jsonify(executeQuery(SQL))
+
+
 def reInitializeDatabase():
 
     configData = getConfigData()
@@ -87,9 +107,10 @@ def read(SQL):
         db = get_db()
         cursor = db.cursor()
         cursor.execute(SQL)
+        db.commit()
         return cursor.fetchall()
-    except mysql.connector.Error:
-        print("Failed to execute query")
+    except mysql.connector.Error as e:
+        print("Failed to execute query: " + str(e))
     finally:
         cursor.close()
 
@@ -98,8 +119,9 @@ def executeQuery(SQL):
         db = get_db()
         cursor = db.cursor()
         cursor.execute(SQL)
-    except mysql.connector.Error:
-        print("Failed to execute query")
+        db.commit()
+    except mysql.connector.Error as e:
+        print("Failed to execute query: " + str(e))
     finally:
         cursor.close()
 
@@ -118,6 +140,13 @@ def executeSqlFromFile(file):
 def test():
     SQL = "SELECT * FROM  OffenseTypes;"
     return jsonify(read(SQL))
+
+def test2():
+    configData = getConfigData()
+    queryFiles = [configData.get("SQL", "victimInsert")]
+
+    for queryFile in queryFiles:
+        executeSqlFromFile(queryFile)
 
 @app.teardown_appcontext
 def close_db(error):
