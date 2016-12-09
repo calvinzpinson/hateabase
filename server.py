@@ -101,6 +101,32 @@ def getOffensesByVictimType():
            "GROUP BY VictimType")
     return jsonify({"NumberVictims":read(SQL)})
 
+@app.route('/hateabase/api/v1.0/getvictimtypebybiasmotivation/<string:BiasMotivation>', methods = ["GET"])
+def getVictimTypeByBiasMotivation(BiasMotivation):
+    SQL = ("SELECT COUNT(*) as NumberVictims, VictimType "
+           "FROM Offenses, BiasMotivations, VictimTypes "
+           "WHERE Offenses.BiasMotivationId = BiasMotivations.BiasMotivationId "
+           "AND Offenses.VictimTypeId = VictimTypes.VictimTypeId "
+           "AND BiasMotivations.BiasMotivation = %s "
+           "GROUP BY VictimType")
+    params = [BiasMotivation]
+    return jsonify({"NumberVictims":readWithParams(SQL, params)})
+
+@app.route('/hateabase/api/v1.0/getoffensesbyincident', methods = ["GET"])
+def getOffensesByIncident():
+    SQL = ("SELECT IncidentId, COUNT(*) as NumberOffenses "
+           "FROM Offenses "
+           "GROUP BY IncidentId")
+    return jsonify({"NumberOffenses":read(SQL)})
+
+#everything explodes when this runs
+@app.route('/hateabase/api/v1.0/gettotalvictimsbydate', methods = ["GET"])
+def getTotalVictimsByDate():
+    SQL = ("SELECT SUM(TotalVictims) as NumberVictims, IncidentDate "
+           "FROM Incidents "
+           "GROUP BY IncidentDate")
+    return jsonify({"NumberVictims":read(SQL)})
+
 
 def get_db():
     if not hasattr(g, "mysql_db"):
