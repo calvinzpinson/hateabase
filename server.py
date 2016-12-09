@@ -56,6 +56,52 @@ def getOffenseByOffenseGroupId(offenseTypeGroupId):
     params = [offenseTypeGroupId]
     return jsonify({"OffenseTypeGroups":readWithParams(SQL, params)})
 
+@app.route('/hateabase/api/v1.0/getoffensebybiasmotivation', methods = ["GET"])
+def getOffenseByBiasMotivation():
+    SQL = ("SELECT COUNT(*) AS NumberOfOffenses, BiasMotivation "
+           "FROM Offenses, BiasMotivations "
+           "WHERE Offenses.BiasMotivationID = BiasMotivations.BiasMotivationId "
+           "GROUP BY BiasMotivation")
+    return jsonify({"BiasMotivations":read(SQL)})
+
+@app.route('/hateabase/api/v1.0/getincidentsbymonth', methods = ["GET"])
+def getIncidentsByMonth():
+    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, MONTH(IncidentDate) "
+           "FROM Incidents "
+           "GROUP BY MONTH(IncidentDate)")
+    return jsonify({"Frequencies":read(SQL)})
+
+@app.route('/hateabase/api/v1.0/getincidentsbyoffenderrace', methods = ["GET"])
+def getIncidentsByOffenderRace():
+    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, Race "
+           "FROM Incidents, OffenderRace "
+           "WHERE Incidents.OffenderRaceId = OffenderRace.OffenderRaceId "
+           "GROUP BY Race")
+    return jsonify({"OffenderRace":read(SQL)})
+
+@app.route('/hateabase/api/v1.0/getincidentsbytotaloffenders', methods = ["GET"])
+def getIncidentsByTotalOffenders():
+    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, TotalOffenders "
+           "FROM Incidents "
+           "GROUP BY TotalOffenders")
+    return jsonify({"NumberOffenders":read(SQL)})
+
+@app.route('/hateabase/api/v1.0/getincidentsbytotalvictims', methods = ["GET"])
+def getIncidentsByTotalVictims():
+    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, TotalVictims "
+           "FROM Incidents "
+           "GROUP BY TotalVictims")
+    return jsonify({"NumberVictims":read(SQL)})
+
+@app.route('/hateabase/api/v1.0/getoffensesbyvictimtype', methods = ["GET"])
+def getOffensesByVictimType():
+    SQL = ("SELECT COUNT(*) as NumberVictims, VictimType "
+           "FROM Offenses, VictimTypes "
+           "WHERE Offenses.VictimTypeId = VictimTypes.VictimTypeId "
+           "GROUP BY VictimType")
+    return jsonify({"NumberVictims":read(SQL)})
+
+
 def get_db():
     if not hasattr(g, "mysql_db"):
         g.mysql_db = connect()
