@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import ConfigParser as configparser
 from __future__ import print_function
-from sys import argv, last_traceback, stderr, exit as die
+import ConfigParser as configparser
+from sys import argv, stderr, exit as die
 import pip
 
 try:
