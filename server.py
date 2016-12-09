@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from sys import argv, exit as die
-import pip, configparser
+import pip, ConfigParser as configparser
 
 try:
     import mysql.connector
@@ -23,14 +23,18 @@ def hateabase():
         result = request.form['Category']
     else:
         result = ""
-    return render_template('base.html', result=result)
+    races = SelectRaces()
+    return render_template('base.html', result=result, races=races)
 
 @app.route('/hateabase/api/v1.0/getgroup')
-
 def get_db():
     if not hasattr(g, "mysql_db"):
         g.mysql_db = connect()
     return g.mysql_db
+
+def SelectRaces():
+    sql = "SELECT DISTINCT Race FROM OffenderRace"
+    return [ x[u'Race'] for x in (read(sql)) ]
 
 def read(SQL, parameters):
     try:
