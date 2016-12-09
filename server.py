@@ -33,11 +33,43 @@ def hateabase():
     races = SelectRaces()
     return render_template('base.html', result=result, races=races)
 
-@app.route('/hateabase/api/v1.0/getgroup')
+@app.route('/hateabase/api/v1.0/getoffensebygroup', methods = ["GET"])
+def getOffenseByOffenseGroup():
+    SQL = ("SELECT COUNT(*) AS NumberOfOffenses, OffenseTypeGroup "
+           "FROM Offenses, OffenseTypeGroups, OffenseTypes "
+           "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId "
+           "AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId "
+           "GROUP BY OffenseTypeGroups.OffenseTypeGroupId")
+
+    return jsonify({"OffenseTypeGroups":read(SQL)})
+
+@app.route('/hateabase/api/v1.0/getoffensebygroupid/<int:offenseTypeGroupId>', methods = ["GET"])
+def getOffenseByOffenseGroupId(offenseTypeGroupId):
+    SQL = ("SELECT COUNT(*) AS NumberOfOffenses, OffenseTypeGroup "
+           "FROM Offenses, OffenseTypeGroups, OffenseTypes "
+           "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId "
+           "AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId "
+           "AND OffenseTypeGroups.OffenseTypeGroupId = %s")
+
+    params = [offenseTypeGroupId]
+    return jsonify({"OffenseTypeGroups":readWithParams(SQL, params)})
+
 def get_db():
     if not hasattr(g, "mysql_db"):
         g.mysql_db = connect()
     return g.mysql_db
+
+def readWithParams(SQL, parameters):
+    try:
+        db = get_db()
+        cursor = db.cursor(buffered = True, dictionary = True)
+        cursor.execute(SQL, parameters)
+        db.commit()
+        return cursor.fetchall()
+    except mysql.connector.Error as e:
+        print("Failed to execute query: " + str(e))
+    finally:
+        cursor.close()
 
 def SelectTotalIncidents():
     sql = "SELECT COUNT(*) as cnt from Incidents"
@@ -50,18 +82,6 @@ def SelectRaceCount(race):
 def SelectRaces():
     sql = "SELECT DISTINCT Race FROM OffenderRace"
     return [ x[u'Race'] for x in (read(sql)) ]
-
-def read(SQL, parameters):
-    try:
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute(SQL, parameters)
-        db.commit()
-        return cursor.fetchall()
-    except mysql.connector.Error as e:
-        print("Failed to execute query: " + str(e))
-    finally:
-        cursor.close()
         
 def connect():
     configData = getConfigData()
