@@ -16,8 +16,8 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def home():
-    return test()
-    #return render_template('index.html')
+    #return test()
+    return render_template('index.html')
 
 @app.route('/hateabase/', methods=['POST', 'GET'])
 def hateabase():
