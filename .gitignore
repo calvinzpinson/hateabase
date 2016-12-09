@@ -5,6 +5,8 @@
 *.sec
 *.config
 settings.json
+launch.json
+
 
 # Virtualenv files
 .Python
