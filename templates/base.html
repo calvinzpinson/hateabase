@@ -11,20 +11,20 @@
             <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
             <h3>View data from:</h3>
             <form name="Category" action="" method='POST'>
+                <input type="hidden" value=0 name="id">
                 <select name="Category">
                     <option value="Bias">Bias</option>
                     <option value="Victim">Victim</option>
                 </select>
                 <button type="submit">View</button>
             </form>
-            {% if result %}
-                <h2>{{ result }} </h1>
-            {% endif %}
+            <h2>Offender Race<h2>
             <form name="Race" action="" method='POST'>
+                <input type="hidden" value=1 name="id">
                 <select name="Race">
                     <option value="Race">Race</option>
                     {% for race in races %}
-                    <option value="{{ race.Race }}">{{ race }}</option>
+                    <option value="{{ race }}">{{ race }}</option>
                     {% endfor %}
                 </select>
                 <button type="submit">View</button>

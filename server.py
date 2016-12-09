@@ -20,7 +20,12 @@ def home():
 @app.route('/hateabase/', methods=['POST', 'GET'])
 def hateabase():
     if request.method == 'POST':
-        result = request.form['Category']
+        if(int(request.form["id"]) == 1):
+            race = request.form['Race']
+            print(float(SelectRaceCount(race)[0]) * 100/int(SelectTotalIncidents()[0]))
+            result = "There were " + str(SelectRaceCount(race)[0]) + " incidents reported where the offender was  " + race + " which is " + str(round(float(SelectRaceCount(race)[0]) * 100/int(SelectTotalIncidents()[0]), 2)) + "%."
+        else:
+            result = request.form['Category']
     else:
         result = ""
     races = SelectRaces()
@@ -31,6 +36,14 @@ def get_db():
     if not hasattr(g, "mysql_db"):
         g.mysql_db = connect()
     return g.mysql_db
+
+def SelectTotalIncidents():
+    sql = "SELECT COUNT(*) as cnt from Incidents"
+    return [ x[u'cnt'] for x in read(sql) ]
+
+def SelectRaceCount(race):
+    sql = "SELECT COUNT(*) as cnt FROM Incidents, OffenderRace WHERE Incidents.OffenderRaceId = OffenderRace.OffenderRaceId AND OffenderRace.Race = '" + race + "'"
+    return [ x[u'cnt'] for x in read(sql) ]
 
 def SelectRaces():
     sql = "SELECT DISTINCT Race FROM OffenderRace"
