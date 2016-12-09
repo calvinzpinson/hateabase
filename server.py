@@ -1,12 +1,12 @@
-#!/usr/bin/env python
-from sys import argv, exit as die
-import pip, configparser
+from __future__ import print_function
+from sys import argv, last_traceback, stderr, exit as die
+import pip
 
 try:
     import mysql.connector
     from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 except:
-    print("Missing requirements\n")
+    print("Missing requirements\n", stderr)
     die(-1)
 
 app = Flask(__name__)
