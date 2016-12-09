@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
     <head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         {% block head %}
             <title>{% block title %}{% endblock %} - Hateabase</title>
         {% endblock %}
     </head>
     <body>
+        <div class="container">
         {% block body %}
-            <h1>Hateabase</h1>
-            <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
-            <h3>View data from:</h3>
+            <center>
+                <h1>Hateabase</h1>
+                <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
+            </center>
+            <h2>Get statistics about:</h2>
             <form name="Category" action="" method='POST'>
                 <input type="hidden" value=0 name="id">
                 <select name="Category">
@@ -18,7 +26,7 @@
                 </select>
                 <button type="submit">View</button>
             </form>
-            <h2>Offender Race<h2>
+            <h4>Offender Race<h4>
             <form name="Race" action="" method='POST'>
                 <input type="hidden" value=1 name="id">
                 <select name="Race">
@@ -30,8 +38,9 @@
                 <button type="submit">View</button>
             </form>
             {% if result %}
-                <h2>{{ result }} </h1>
+                <h4>{{ result }} </h4>
             {% endif %}
         {% endblock %}
+        </div>
     </body>
 </html>

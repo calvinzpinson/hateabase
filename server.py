@@ -24,8 +24,10 @@ def hateabase():
     if request.method == 'POST':
         if(int(request.form["id"]) == 1):
             race = request.form['Race']
-            print(float(SelectRaceCount(race)[0]) * 100/int(SelectTotalIncidents()[0]))
-            result = "There were " + str(SelectRaceCount(race)[0]) + " incidents reported where the offender was  " + race + " which is " + str(round(float(SelectRaceCount(race)[0]) * 100/int(SelectTotalIncidents()[0]), 2)) + "%."
+            if race != "Race":
+                result = "There were " + str(SelectRaceCount(race)[0]) + " incidents reported where the offender was  " + race + " which is " + str(round(float(SelectRaceCount(race)[0]) * 100/int(SelectTotalIncidents()[0]), 2)) + "%."
+            else:
+                result = ""
         else:
             result = request.form['Category']
     else:
