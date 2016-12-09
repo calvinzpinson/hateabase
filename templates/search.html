@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block body %}
+    <h1>Hateabase</h1>
+    <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
+    <h2>Get statistics about:</h2>
+    <form name="Category" action="" method='POST'>
+        <input type="hidden" value=0 name="id">
+        <select name="Category">
+            <option value="Bias">Bias</option>
+            <option value="Victim">Victim</option>
+            </select>
+            <button type="submit">View</button>
+            </form>
+            <h4>Offender Race<h4>
+            <form name="Race" action="" method='POST'>
+            <input type="hidden" value=1 name="id">
+            <select name="Race">
+            <option value="Race">Race</option>
+            {% for race in races %}
+            <option value="{{ race }}">{{ race }}</option>
+        {% endfor %}
+        </select>
+        <button type="submit">View</button>
+    </form>
+    {% if result %}
+        <h4>{{ result }} </h4>
+    {% endif %}
+{% endblock %}

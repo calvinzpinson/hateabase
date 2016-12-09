@@ -33,7 +33,7 @@ def hateabase():
     else:
         result = ""
     races = SelectRaces()
-    return render_template('base.html', result=result, races=races)
+    return render_template('search.html', result=result, races=races)
 
 @app.route('/hateabase/api/v1.0/getoffensebygroup', methods = ["GET"])
 def getOffenseByOffenseGroup():
@@ -144,6 +144,14 @@ def readWithParams(SQL, parameters):
         print("Failed to execute query: " + str(e))
     finally:
         cursor.close()
+
+@app.errorhandler(404)
+def notFound(error):
+    return render_template('error.html', code=404)
+
+@app.errorhandler(500)
+def internal(error):
+    return render_template('error.html', code=500)
 
 def SelectTotalIncidents():
     sql = "SELECT COUNT(*) as cnt from Incidents"

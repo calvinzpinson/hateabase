@@ -1,46 +1,38 @@
 <!DOCTYPE html>
 <html>
     <head>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         {% block head %}
             <title>{% block title %}{% endblock %} - Hateabase</title>
         {% endblock %}
     </head>
     <body>
-        <div class="container">
-        {% block body %}
-            <center>
-                <h1>Hateabase</h1>
-                <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
-            </center>
-            <h2>Get statistics about:</h2>
-            <form name="Category" action="" method='POST'>
-                <input type="hidden" value=0 name="id">
-                <select name="Category">
-                    <option value="Bias">Bias</option>
-                    <option value="Victim">Victim</option>
-                </select>
-                <button type="submit">View</button>
-            </form>
-            <h4>Offender Race<h4>
-            <form name="Race" action="" method='POST'>
-                <input type="hidden" value=1 name="id">
-                <select name="Race">
-                    <option value="Race">Race</option>
-                    {% for race in races %}
-                    <option value="{{ race }}">{{ race }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit">View</button>
-            </form>
-            {% if result %}
-                <h4>{{ result }} </h4>
-            {% endif %}
-        {% endblock %}
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header"><a class="navbar-brand">Hateabase</a></div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a>Home</a>
+                        </li>
+                        <li>
+                            <a>About</a>
+                        </li>
+                        <li>
+                            <a>Search</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container col-xs-12 col-md-8 col-md-offset-2" style="padding-top: 50px;">
+            {% block body %}
+                <h1>Hello World</h1>
+            {% endblock %}
         </div>
     </body>
 </html>
