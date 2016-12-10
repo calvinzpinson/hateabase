@@ -2,9 +2,10 @@
 from __future__ import print_function
 from sys import argv, stderr, exit as die
 import pip
+import json
 
 try:
-    from sql_util import read, readWithParams, executeQuery, executeWithParams
+    from sql_util import read, readWithParams, executeQuery, executeWithParams, createQuery
     import mysql.connector
     from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 except:
@@ -13,27 +14,57 @@ except:
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+apiJsonObject = None
+queryJsonObject = None
 
 @app.route('/')
 def home():
-    #return test()
     return render_template('index.html')
 
-@app.route('/hateabase/', methods=['POST', 'GET'])
+@app.route('/hateabase/', methods=['GET'])
 def hateabase():
-    if request.method == 'POST':
-        if(int(request.form["id"]) == 1):
-            race = request.form['Race']
-            if race != "Race":
-                result = "There were " + str(SelectRaceCount(race)[0]) + " incidents reported where the offender was  " + race + " which is " + str(round(float(SelectRaceCount(race)[0]) * 100/int(SelectTotalIncidents()[0]), 2)) + "%."
-            else:
-                result = ""
-        else:
-            result = request.form['Category']
-    else:
-        result = ""
-    races = SelectRaces()
-    return render_template('search.html', result=result, races=races)
+    global apiJsonObject
+    with open('public.api.json', 'r') as f:
+        apiJsonObject = json.load(f)
+    return render_template('search.html', api=apiJsonObject)
+
+@app.route('/hateabase/api/v1.0/<string:get>/<string:by>/query', methods=["GET"])
+def getQueryBy(get, by):
+    if not app.debug:
+        abort(404)
+    global queryJsonObject
+    if app.debug:
+        with open('queries/api.json', 'r') as f:
+            queryJsonObject = json.load(f)
+    try:
+        target = queryJsonObject[get][by]
+        query = createQuery(target['query'])
+        return jsonify({'query':query})
+    except Exception as e:
+        print(e)
+        abort(400)
+
+@app.route('/hateabase/api/v1.0/<string:get>/<string:by>', methods=["GET"])
+def getBy(get, by):
+    global queryJsonObject
+    if not queryJsonObject or app.debug:
+        with open('queries/api.json', 'r') as f:
+            queryJsonObject = json.load(f)
+    try:
+        args = request.args
+        target = queryJsonObject[get][by]
+        query = createQuery(target['query'])
+        params = []
+        for param in target['params']:
+            params.append(args[param])
+        return jsonify({'data':readWithParams(query, params)})
+    except Exception as e:
+        print(e)
+        abort(400)
+
+@app.errorhandler(400)
+def badRequest(error):
+    return render_template('error.html', code=400)
 
 @app.route('/hateabase/insert', methods=['GET', 'POST'])
 def insert():
@@ -77,98 +108,6 @@ def getVictimTypeId(params):
            "WHERE VictimTypeName = %s")
     return [x[u'VictimTypeId'] for x in readWithParams(SQL, params)][0]
 
-@app.route('/hateabase/api/v1.0/getoffensebygroup', methods = ["GET"])
-def getOffenseByOffenseGroup():
-    SQL = ("SELECT COUNT(*) AS NumberOfOffenses, OffenseTypeGroup "
-           "FROM Offenses, OffenseTypeGroups, OffenseTypes "
-           "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId "
-           "AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId "
-           "GROUP BY OffenseTypeGroups.OffenseTypeGroupId")
-
-    return jsonify({"OffenseTypeGroups":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getoffensebygroupid/<int:offenseTypeGroupId>', methods = ["GET"])
-def getOffenseByOffenseGroupId(offenseTypeGroupId):
-    SQL = ("SELECT COUNT(*) AS NumberOfOffenses, OffenseTypeGroup "
-           "FROM Offenses, OffenseTypeGroups, OffenseTypes "
-           "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId "
-           "AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId "
-           "AND OffenseTypeGroups.OffenseTypeGroupId = %s")
-
-    params = [offenseTypeGroupId]
-    return jsonify({"OffenseTypeGroups":readWithParams(SQL, params)})
-
-@app.route('/hateabase/api/v1.0/getoffensebybiasmotivation', methods = ["GET"])
-def getOffenseByBiasMotivation():
-    SQL = ("SELECT COUNT(*) AS NumberOfOffenses, BiasMotivation "
-           "FROM Offenses, BiasMotivations "
-           "WHERE Offenses.BiasMotivationID = BiasMotivations.BiasMotivationId "
-           "GROUP BY BiasMotivation")
-    return jsonify({"BiasMotivations":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getincidentsbymonth', methods = ["GET"])
-def getIncidentsByMonth():
-    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, MONTH(IncidentDate) "
-           "FROM Incidents "
-           "GROUP BY MONTH(IncidentDate)")
-    return jsonify({"Frequencies":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getincidentsbyoffenderrace', methods = ["GET"])
-def getIncidentsByOffenderRace():
-    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, Race "
-           "FROM Incidents, OffenderRace "
-           "WHERE Incidents.OffenderRaceId = OffenderRace.OffenderRaceId "
-           "GROUP BY Race")
-    return jsonify({"OffenderRace":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getincidentsbytotaloffenders', methods = ["GET"])
-def getIncidentsByTotalOffenders():
-    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, TotalOffenders "
-           "FROM Incidents "
-           "GROUP BY TotalOffenders")
-    return jsonify({"NumberOffenders":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getincidentsbytotalvictims', methods = ["GET"])
-def getIncidentsByTotalVictims():
-    SQL = ("SELECT COUNT(*) AS NumberOfIncidents, TotalVictims "
-           "FROM Incidents "
-           "GROUP BY TotalVictims")
-    return jsonify({"NumberVictims":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getoffensesbyvictimtype', methods = ["GET"])
-def getOffensesByVictimType():
-    SQL = ("SELECT COUNT(*) as NumberVictims, VictimType "
-           "FROM Offenses, VictimTypes "
-           "WHERE Offenses.VictimTypeId = VictimTypes.VictimTypeId "
-           "GROUP BY VictimType")
-    return jsonify({"NumberVictims":read(SQL)})
-
-@app.route('/hateabase/api/v1.0/getvictimtypebybiasmotivation/<string:BiasMotivation>', methods = ["GET"])
-def getVictimTypeByBiasMotivation(BiasMotivation):
-    SQL = ("SELECT COUNT(*) as NumberVictims, VictimType "
-           "FROM Offenses, BiasMotivations, VictimTypes "
-           "WHERE Offenses.BiasMotivationId = BiasMotivations.BiasMotivationId "
-           "AND Offenses.VictimTypeId = VictimTypes.VictimTypeId "
-           "AND BiasMotivations.BiasMotivation = %s "
-           "GROUP BY VictimType")
-    params = [BiasMotivation]
-    return jsonify({"NumberVictims":readWithParams(SQL, params)})
-
-@app.route('/hateabase/api/v1.0/getoffensesbyincident', methods = ["GET"])
-def getOffensesByIncident():
-    SQL = ("SELECT IncidentId, COUNT(*) as NumberOffenses "
-           "FROM Offenses "
-           "GROUP BY IncidentId")
-    return jsonify({"NumberOffenses":read(SQL)})
-
-#everything explodes when this runs
-@app.route('/hateabase/api/v1.0/gettotalvictimsbydate', methods = ["GET"])
-def getTotalVictimsByDate():
-    SQL = ("(SELECT SUM(TotalVictims) as NumberVictims, IncidentDate "
-           "FROM Incidents "
-           "GROUP BY IncidentDate)")
-    return jsonify({"NumberVictims":read(SQL)})
-
 @app.errorhandler(404)
 def notFound(error):
     return render_template('error.html', code=404)
@@ -195,9 +134,13 @@ def close_db(error):
         g.mysql_db.close()    
 
 def main():
+    global apiJsonObject
+    with open('public.api.json', 'r') as f:
+        apiJsonObject = json.load(f)
     port_num = 5000
     if len(argv) == 2:
         port_num = int(argv[1])
+    app.debug = True
     app.run(port=port_num)
 
 if __name__ == '__main__':
