@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import ConfigParser as configparser
 from sys import argv, stderr, exit as die
 import pip
 
 try:
+    from sql_util import read, readWithParams
     import mysql.connector
     from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 except:
@@ -122,28 +122,10 @@ def getOffensesByIncident():
 #everything explodes when this runs
 @app.route('/hateabase/api/v1.0/gettotalvictimsbydate', methods = ["GET"])
 def getTotalVictimsByDate():
-    SQL = ("SELECT SUM(TotalVictims) as NumberVictims, IncidentDate "
+    SQL = ("(SELECT SUM(TotalVictims) as NumberVictims, IncidentDate "
            "FROM Incidents "
-           "GROUP BY IncidentDate")
+           "GROUP BY IncidentDate)")
     return jsonify({"NumberVictims":read(SQL)})
-
-
-def get_db():
-    if not hasattr(g, "mysql_db"):
-        g.mysql_db = connect()
-    return g.mysql_db
-
-def readWithParams(SQL, parameters):
-    try:
-        db = get_db()
-        cursor = db.cursor(buffered = True, dictionary = True)
-        cursor.execute(SQL, parameters)
-        db.commit()
-        return cursor.fetchall()
-    except mysql.connector.Error as e:
-        print("Failed to execute query: " + str(e))
-    finally:
-        cursor.close()
 
 @app.errorhandler(404)
 def notFound(error):
@@ -164,126 +146,6 @@ def SelectRaceCount(race):
 def SelectRaces():
     sql = "SELECT DISTINCT Race FROM OffenderRace"
     return [ x[u'Race'] for x in (read(sql)) ]
-        
-def connect():
-    configData = getConfigData()
-
-    host = configData.get("DigitalOcean", 'host')
-    user = configData.get("DigitalOcean", 'userid')
-    password = configData.get("DigitalOcean", 'password')
-    database = configData.get("DigitalOcean", 'database')
-
-    try:
-        conn = mysql.connector.connect(
-                user = user,
-                password = password,
-                host = host,
-                database = database)
-    except mysql.connector.ProgrammingError:
-        print("Unable to connect to the database")
-        exit(-1)
-
-    return conn
-
-def getConfigData():
-    configParser = configparser.ConfigParser()
-    configFilePath = "./dbconf.365"
-    configParser.read(configFilePath)
-
-    return configParser
-
-def insertValues():
-    configData = getConfigData()
-    queryFiles = [configData.get("SQL", "insert")]
-
-    for queryFile in queryFiles:
-        executeSqlFromFile(queryFile)
-
-def initializeDatabase():
-
-    configData = getConfigData()
-    queryFiles = [configData.get("SQL", "create"), 
-                  configData.get("SQL", "insert")]
-
-    for queryFile in queryFiles:
-        executeSqlFromFile(queryFile)
-
-def createTables():
-
-    configData = getConfigData()
-    queryFiles = [configData.get("SQL", "create")]
-
-    for queryFile in queryFiles:
-        executeSqlFromFile(queryFile)
-
-def destroyDatabase():
-    configData = getConfigData()
-    queryFiles = [configData.get("SQL", "destroy")]
-
-    for queryFile in queryFiles:
-        executeSqlFromFile(queryFile)
-
-def testInsert():
-    SQL = "INSERT INTO VictimTypes VALUES ('B', 'po')"
-    return jsonify(executeQuery(SQL))
-
-
-def reInitializeDatabase():
-
-    configData = getConfigData()
-    queryFiles = [configData.get("SQL", "destroy"), 
-                  configData.get("SQL", "create"), 
-                  configData.get("SQL", "insert")]
-
-    for queryFile in queryFiles:
-        executeSqlFromFile(queryFile)
-
-def read(SQL):
-    try:
-        db = get_db()
-        cursor = db.cursor(buffered=True, dictionary=True)
-        cursor.execute(SQL)
-        db.commit()
-        result = cursor.fetchall()
-        return result
-    except mysql.connector.Error as e:
-        print("Failed to execute query: " + str(e))
-    finally:
-        cursor.close()
-
-def executeQuery(SQL):
-    try:
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute(SQL)
-        db.commit()
-    except mysql.connector.Error as e:
-        print("Failed to execute query: " + str(e))
-    finally:
-        cursor.close()
-
-def executeSqlFromFile(file):
-    try:
-        with open(file, 'r') as fd:
-            sqlFile = fd.read()
-            queries = sqlFile.split(";")
-            for query in queries:
-                executeQuery(query)
-
-    except IOError:
-        print("Failed to open sql file")
-        exit(-1)
-
-def test():
-    SQL = "SELECT * FROM  OffenseTypes"
-    return jsonify({"OffenseTypes":read(SQL)})
-
-def test2():
-    configData = getConfigData()
-    queryFiles = [configData.get("SQL", "victimInsert")]
-
-    for queryFile in queryFiles:
-        executeSqlFromFile(queryFile)
 
 @app.teardown_appcontext
 def close_db(error):
