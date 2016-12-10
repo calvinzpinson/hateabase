@@ -1,0 +1,50 @@
+[
+    {
+        "val": "offense",
+        "title": "Offense",
+        "attributes": [
+            {
+                "val": "biasmotivation",
+                "title": "Bias Motivation"
+            },
+            {
+                "val": "group",
+                "title": "Group"
+            },
+            {
+               "val": "incident",
+               "title": "Incident" 
+            }
+        ]
+    },
+    {
+        "val": "incident",
+        "title": "Incident",
+        "attributes": [
+            {
+                "val": "biasmotivation",
+                "title": "Bias Motivation"
+            }
+        ]
+    },
+    {
+        "val": "totalvictims",
+        "title": "Total Victims",
+        "attributes": [
+            {
+                "val": "biasmotivation",
+                "title": "Bias Motivation"
+            }
+        ]
+    },
+    {
+        "val": "victimtype",
+        "title": "Victim Type",
+        "attributes": [
+            {
+                "val": "biasmotivation",
+                "title": "Bias Motivation"
+            }
+        ]
+    }
+]

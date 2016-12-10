@@ -15,7 +15,8 @@ def readWithParams(SQL, parameters):
         cursor = db.cursor(buffered = True, dictionary = True)
         cursor.execute(SQL, parameters)
         db.commit()
-        return cursor.fetchall()
+        result = cursor.fetchall()
+        return sanitize(result, (lambda val: float(val) if type(val) == Decimal else val))
     except mysql.connector.Error as e:
         print("Failed to execute query: " + str(e))
     finally:
@@ -140,3 +141,10 @@ def test2():
 
     for queryFile in queryFiles:
         executeSqlFromFile(queryFile)
+
+def createQuery(components):
+    query = ''
+    for clause in ['select', 'from', 'where', 'group', 'having', 'order']:
+        if components.has_key(clause):
+            query += components[clause]
+    return query

@@ -1,29 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Search{% endblock %}
 {% block body %}
+    <script src="/static/snorlax.js"></script>
     <h1>Hateabase</h1>
     <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
     <h2>Get statistics about:</h2>
-    <form name="Category" action="" method='POST'>
-        <input type="hidden" value=0 name="id">
-        <select name="Category">
-            <option value="Bias">Bias</option>
-            <option value="Victim">Victim</option>
-            </select>
-            <button type="submit">View</button>
-            </form>
-            <h4>Offender Race<h4>
-            <form name="Race" action="" method='POST'>
-            <input type="hidden" value=1 name="id">
-            <select name="Race">
-            <option value="Race">Race</option>
-            {% for race in races %}
-            <option value="{{ race }}">{{ race }}</option>
-        {% endfor %}
+    <form name="getter">
+        <input type="hidden" value=0 name="id" />
+        <select name="get-choice" id="get-chooser">
+            {% for obj in api %}
+                <option value="{{ obj.val }}">{{ obj.title }}</option>
+            {% endfor %}
         </select>
-        <button type="submit">View</button>
     </form>
-    {% if result %}
-        <h4>{{ result }} </h4>
-    {% endif %}
+    {% for obj in api %}
+        <form name="by-{{ obj.val }}">
+            <input type="hidden" value=1 name="id" />
+            <select name="by-choice-{{ obj.val }}" id="by-chooser-{{ obj.val }}">
+                {% for data in obj.attributes %}
+                    <option value="{{ data.val }}">{{ data.title }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    {% endfor %}
+    <button id="sender">Query</button>
+    <div id="results"></div>
+    <script type="text/javascript">
+        var snore = new snorlax('http://localhost:5000/hateabase/api/v1.0');
+        $("button#sender").click(function() {
+            snore.find($("select#get-chooser").val(), $("select#by-chooser-" + $("select#get-chooser").val()).val(), "", function(data){
+                var results = $("div#results");
+                var textString = "";
+                data["data"].forEach(function(val, idx, list) {console.log(val); textString += val.toString()})
+                results.text(textString);
+            });
+        });
+    </script>
 {% endblock %}
