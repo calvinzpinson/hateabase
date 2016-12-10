@@ -21,6 +21,20 @@ def readWithParams(SQL, parameters):
     finally:
         cursor.close()
 
+def executeWithParams(SQL, parameters):
+    cursor = None
+    try:
+        db = get_db()
+        cursor = db.cursor(buffered = True, dictionary = True)
+        cursor.execute(SQL, parameters)
+        db.commit()
+    except mysql.connector.Error as e:
+        print("Failed to execute query: " + str(e))
+    finally:
+        if cursor:
+            cursor.close()
+
+
 def connect():
     configData = getConfigData()
 

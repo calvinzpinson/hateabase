@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Insert{% endblock %}
+{% block body %}
+    <h1>Hateabase</h1>
+    <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
+    <h2>Report an incident</h2>
+    <form name="Incidents" action="" method='POST'>
+        ORI:<input type="text" name="ORI">
+        IncidentId:<input type="text" name="IncidentId">
+        IncidentDate:<input type="date" pattern=YYYY-MM-DD name="IncidentDate">
+        <br />
+        TotalVictims:<input type="text" name="TotalVictims">
+        TotalOffenders:<input type="text" name="TotalOffenders">
+        OffenderRace:<input type="text" name="OffenderRace">
+        <br />
+        Ordinal1:<input type="text" name="Ordinal1">
+        OffenseType1:<input type="text" name="OffenseType1">
+        NumberOfVictims1:<input type="text" name="NumberOfVictims1">
+        BiasMotivation1:<input type="text" name="BiasMotivation1">
+        VictimType1:<input type="text" name="VictimType1">
+        <br />
+        Ordinal2:<input type="text" name="Ordinal2">
+        OffenseType2:<input type="text" name="OffenseType2">
+        NumberOfVictims2:<input type="text" name="NumberOfVictims2">
+        BiasMotivation2:<input type="text" name="BiasMotivation2">
+        VictimType2:<input type="text" name="VictimType2">
+        <br />
+        Ordinal3:<input type="text" name="Ordinal3">
+        OffenseType3:<input type="text" name="OffenseType3">
+        NumberOfVictims3:<input type="text" name="NumberOfVictims3">
+        BiasMotivation3:<input type="text" name="BiasMotivation3">
+        VictimType3:<input type="text" name="VictimType3">
+        <br />
+        Ordinal4:<input type="text" name="Ordinal4">
+        OffenseType4:<input type="text" name="OffenseType4">
+        NumberOfVictims4:<input type="text" name="NumberOfVictims4">
+        BiasMotivation4:<input type="text" name="BiasMotivation4">
+        VictimType4:<input type="text" name="VictimType4">
+        <button type="submit">Submit</button>
+    </form>
+    {% if result %}
+        <h4>{{ result }} </h4>
+    {% endif %}
+{% endblock %}

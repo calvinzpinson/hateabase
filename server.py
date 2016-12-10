@@ -4,7 +4,7 @@ from sys import argv, stderr, exit as die
 import pip
 
 try:
-    from sql_util import read, readWithParams
+    from sql_util import read, readWithParams, executeQuery, executeWithParams
     import mysql.connector
     from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 except:
@@ -34,6 +34,48 @@ def hateabase():
         result = ""
     races = SelectRaces()
     return render_template('search.html', result=result, races=races)
+
+@app.route('/hateabase/insert', methods=['GET', 'POST'])
+def insert():
+    if request.method == 'POST':
+        params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], request.form['OffenderRace']]
+        addIncident(params)
+
+        for i in range(1, 4):
+            if request.form['Ordinal' + str(i)]:
+                offenseparams = [request.form['ORI'], request.form['IndicentId'], request.form['Ordinal' + i], getOffenseTypeId(request.form['OffenseType']), request.form['NumberOfVictims'], getBiasMotivationId(request.form['BiasMotivationId']), getVictimTypeId(request.form['VictimType'])]
+
+    return render_template('insert.html')
+
+def addIncident(params):
+    SQL = ("INSERT INTO Incidents "
+           "VALUES "
+           "(%s, %s, %s, %s, %s, %s)")
+    executeWithParams(SQL, params)
+
+def addOffense(params):
+    SQL = ("INSERT INTO Offenses "
+           "VALUES "
+           "(%s, %s, %s, %s, %s, %s, %s)")
+    executeWithParams(SQL, params)
+
+def getOffenseTypeId(params):
+    SQL = ("SELECT OffenseTypeId "
+           "FROM OffenseTypes "
+           "WHERE OffenseTypeName = %s")
+    return [x[u'OffenseTypeId'] for x in readWithParams(SQL, params)][0]
+
+def getBiasMotivationId(params):
+    SQL = ("SELECT BiasMotivationId "
+           "FROM BiasMotivations "
+           "WHERE BiasMotivationName = %s")
+    return [x[u'BiasMotivationId'] for x in readWithParams(SQL, params)][0]
+
+def getVictimTypeId(params):
+    SQL = ("SELECT VictimTypeId "
+           "FROM VictimTypes "
+           "WHERE VictimTypeName = %s")
+    return [x[u'VictimTypeId'] for x in readWithParams(SQL, params)][0]
 
 @app.route('/hateabase/api/v1.0/getoffensebygroup', methods = ["GET"])
 def getOffenseByOffenseGroup():
