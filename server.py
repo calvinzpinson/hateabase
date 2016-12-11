@@ -52,8 +52,7 @@ def getQueryBy(get, by):
         query = createQuery(target['query'])
         return jsonify({'query':query})
     except Exception as e:
-        print(e)
-        abort(400)
+        return ("", 400, "")
 
 @app.route('/hateabase/api/v1.0/<string:get>/<string:by>', methods=["GET"])
 def getBy(get, by):
@@ -68,10 +67,9 @@ def getBy(get, by):
         params = []
         for param in target['params']:
             params.append(args[param])
-        return jsonify({'data':readWithParams(query, params)})
+        return jsonify({'data':readWithParams(query, params),'keys':target['key']})
     except Exception as e:
-        print(e)
-        abort(400)
+        return ("", 400, "")
 
 @app.errorhandler(400)
 def badRequest(error):
@@ -88,6 +86,7 @@ def insert():
                 offenseparams = [request.form['ORI'], request.form['IndicentId'], request.form['Ordinal' + i], getOffenseTypeId(request.form['OffenseType']), request.form['NumberOfVictims'], getBiasMotivationId(request.form['BiasMotivationId']), getVictimTypeId(request.form['VictimType'])]
 
     return render_template('insert.html')
+
 
 def addIncident(params):
     SQL = ("INSERT INTO Incidents "

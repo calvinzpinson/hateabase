@@ -8,6 +8,7 @@
     <form name="getter">
         <input type="hidden" value=0 name="id" />
         <select name="get-choice" id="get-chooser">
+            <option value="">Get</option>
             {% for obj in api %}
                 <option value="{{ obj.val }}">{{ obj.title }}</option>
             {% endfor %}
@@ -17,6 +18,7 @@
         <form name="by-{{ obj.val }}">
             <input type="hidden" value=1 name="id" />
             <select name="by-choice-{{ obj.val }}" id="by-chooser-{{ obj.val }}">
+                <option value="">By</option>
                 {% for data in obj.attributes %}
                     <option value="{{ data.val }}">{{ data.title }}</option>
                 {% endfor %}
@@ -24,15 +26,34 @@
         </form>
     {% endfor %}
     <button id="sender">Query</button>
-    <div id="results"></div>
+    <table id="results">
+    </table>
     <script type="text/javascript">
         var snore = new snorlax('http://localhost:5000/hateabase/api/v1.0');
         $("button#sender").click(function() {
-            snore.find($("select#get-chooser").val(), $("select#by-chooser-" + $("select#get-chooser").val()).val(), "", function(data){
-                var results = $("div#results");
-                var textString = "";
-                data["data"].forEach(function(val, idx, list) {console.log(val); textString += val.toString()})
-                results.text(textString);
+            snore.find($("select#get-chooser").val(), $("select#by-chooser-" + $("select#get-chooser").val()).val(), "", function(json, status, xhr){
+                console.log(xhr.status);
+                if (xhr.status === 200) {
+                    var results = $("table#results");
+                    data = json['data'];
+                    keys = json['keys'];
+
+                    var htm = ""
+                    
+                    htm += "<tr>"
+                        keys.forEach(function(val, key, keyList) {
+                            htm += "<td>" + val + "</td>";
+                        });
+                        htm += "</tr>"
+                    data.forEach(function(dict, index, dataList) {
+                        htm += "<tr>"
+                        keys.forEach(function(val, key, keyList) {
+                            htm += "<td>" + dict[val] + "</td>";
+                        });
+                        htm += "</tr>"
+                    });
+                    results.html(htm);
+                }
             });
         });
     </script>
