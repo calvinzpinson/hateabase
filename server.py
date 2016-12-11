@@ -21,6 +21,13 @@ queryJsonObject = None
 def home():
     return render_template('index.html')
 
+@app.route('/hateabase/api/v1.0/insert/', methods=["POST"])
+def insertOffenses():
+    params = request.form.getlist('params', type = str)
+    SQL = ("INSERT INTO OFFENSES "
+           "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+    executeWithParams(SQL, params)
+
 @app.route('/hateabase/', methods=['GET'])
 def hateabase():
     global apiJsonObject
