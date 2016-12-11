@@ -26,7 +26,11 @@ def insertOffenses():
     params = request.form.getlist('params', type = str)
     SQL = ("INSERT INTO OFFENSES "
            "VALUES (%s, %s, %s, %s, %s, %s, %s)")
-    executeWithParams(SQL, params)
+    try:
+        executeWithParams(SQL, params)
+        return 201
+    except Exception as e:
+        return "Invalid request:" + e, 400
 
 @app.route('/hateabase/', methods=['GET'])
 def hateabase():
