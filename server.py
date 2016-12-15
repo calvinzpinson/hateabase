@@ -58,8 +58,21 @@ def getQueryBy(get, by):
     except Exception as e:
         return ("", 400, "")
 
+@app.route('/hateabase/api/v1.0/<string:get>', methods=["GET"])
+def penTesting(get):
+    return ("", 400, "")
+
 @app.route('/hateabase/api/v1.0/<string:get>/<string:by>', methods=["GET"])
 def getBy(get, by):
+    try:
+        query, params, target = loadQuery(get, by)
+        data = readWithParams(query, params)
+        return jsonify({'data':data,'keys':getKeys(data, target)})
+    except Exception as e:
+        print(e)
+        return ("", 400, "")
+
+def loadQuery(get, by):
     global queryJsonObject
     if not queryJsonObject or app.debug:
         with open('queries/api.json', 'r') as f:
@@ -71,9 +84,10 @@ def getBy(get, by):
         params = []
         for param in target['params']:
             params.append(args[param])
-        return jsonify({'data':readWithParams(query, params),'keys':target['key']})
     except Exception as e:
-        return ("", 400, "")
+        print(e)
+        return None
+    return query, params, target
 
 @app.errorhandler(400)
 def badRequest(error):
@@ -141,6 +155,13 @@ def SelectRaceCount(race):
 def SelectRaces():
     sql = "SELECT DISTINCT Race FROM OffenderRace"
     return [ x[u'Race'] for x in (read(sql)) ]
+
+def getKeys(data, target):
+    if target.has_key('keys'):
+        print(target['keys'])
+        return target['keys']
+    return data[0].keys()
+
 
 @app.teardown_appcontext
 def close_db(error):

@@ -16,6 +16,7 @@ def readWithParams(SQL, parameters):
         cursor.execute(SQL, parameters)
         db.commit()
         result = cursor.fetchall()
+        print(result)
         return sanitize(result, (lambda val: float(val) if type(val) == Decimal else val))
     except mysql.connector.Error as e:
         print("Failed to execute query: " + str(e))
