@@ -11,32 +11,68 @@
         <br />
         TotalVictims:<input type="text" name="TotalVictims">
         TotalOffenders:<input type="text" name="TotalOffenders">
-        OffenderRace:<input type="text" name="OffenderRace">
+        OffenderRace:<select name="OffenderRace">
+			{% for race in races %}
+            	<option value="{{ race }}">{{ race }}</option>
+            {% endfor %}
+		</select>
         <br />
-        Ordinal1:<input type="text" name="Ordinal1">
-        OffenseType1:<input type="text" name="OffenseType1">
-        NumberOfVictims1:<input type="text" name="NumberOfVictims1">
-        BiasMotivation1:<input type="text" name="BiasMotivation1">
-        VictimType1:<input type="text" name="VictimType1">
+        Ordinal:<input type="text" name="Ordinal1">
+        OffenseType:<input type="text" name="OffenseType1">
+        NumberOfVictims:<input type="text" name="NumberOfVictims1">
+        BiasMotivation:<select name="BiasMotivation1">
+            {% for b in bias %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
+        VictimType:<select name="VictimType1">
+            {% for b in victim %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
         <br />
-        Ordinal2:<input type="text" name="Ordinal2">
-        OffenseType2:<input type="text" name="OffenseType2">
-        NumberOfVictims2:<input type="text" name="NumberOfVictims2">
-        BiasMotivation2:<input type="text" name="BiasMotivation2">
-        VictimType2:<input type="text" name="VictimType2">
+        Ordinal:<input type="text" name="Ordinal2">
+        OffenseType:<input type="text" name="OffenseType2">
+        NumberOfVictims:<input type="text" name="NumberOfVictims2">
+        BiasMotivation:<select name="BiasMotivation2">
+            {% for b in bias %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
+        VictimType:<select name="VictimType2">
+            {% for b in victim %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
         <br />
-        Ordinal3:<input type="text" name="Ordinal3">
-        OffenseType3:<input type="text" name="OffenseType3">
-        NumberOfVictims3:<input type="text" name="NumberOfVictims3">
-        BiasMotivation3:<input type="text" name="BiasMotivation3">
-        VictimType3:<input type="text" name="VictimType3">
+        Ordinal:<input type="text" name="Ordinal3">
+        OffenseType:<input type="text" name="OffenseType3">
+        NumberOfVictims:<input type="text" name="NumberOfVictims3">
+        BiasMotivation:<select name="BiasMotivation3">
+            {% for b in bias %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
+        VictimType:<select name="VictimType3">
+            {% for b in victim %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
         <br />
-        Ordinal4:<input type="text" name="Ordinal4">
-        OffenseType4:<input type="text" name="OffenseType4">
-        NumberOfVictims4:<input type="text" name="NumberOfVictims4">
-        BiasMotivation4:<input type="text" name="BiasMotivation4">
-        VictimType4:<input type="text" name="VictimType4">
-        <button type="submit">Submit</button>
+        Ordinal:<input type="text" name="Ordinal4">
+        OffenseType:<input type="text" name="OffenseType4">
+        NumberOfVictims:<input type="text" name="NumberOfVictims4">
+        BiasMotivation:<select name="BiasMotivation4">
+            {% for b in bias %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
+        VictimType:<select name="VictimType4">
+            {% for b in victim %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" method="post">Submit</button>
     </form>
     {% if result %}
         <h4>{{ result }} </h4>

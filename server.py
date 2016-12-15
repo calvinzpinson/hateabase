@@ -95,24 +95,27 @@ def badRequest(error):
 
 @app.route('/insert', methods=['GET', 'POST'])
 def insert():
+    races = SelectRaces()
+    victim = SelectVictimTypes()
+    bias = SelectBiasMotivation()
     if request.method == 'POST':
+        print("start")
         try:
-            params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], request.form['OffenderRace']]
+            params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], getOffenderRaceId(request.form['OffenderRace'])]
             addIncident(params)
+            print("incident added")
 
             for i in range(1, 4):
                 if request.form['Ordinal' + str(i)]:
+                    print(request.form['Ordinal' + str(i)])
                     offenseparams = [request.form['ORI'], request.form['IndicentId'], request.form['Ordinal' + i], getOffenseTypeId(request.form['OffenseType']), request.form['NumberOfVictims'], getBiasMotivationId(request.form['BiasMotivationId']), getVictimTypeId(request.form['VictimType'])]
                     addOffense(offenseparams)
 
         except Exception as e:
             return ("", 400, "")
-    return render_template('insert.html')
-
-
+    return render_template('insert.html', races=races, victim=victim, bias=bias)
 
 def addIncident(params):
-    params[5] = getOffenderRaceId([params[5]])
     SQL = ("INSERT INTO Incidents "
            "VALUES "
            "(%s, %s, %s, %s, %s, %s)")
@@ -139,13 +142,13 @@ def getOffenseTypeId(params):
 def getBiasMotivationId(params):
     SQL = ("SELECT BiasMotivationId "
            "FROM BiasMotivations "
-           "WHERE BiasMotivationName = %s")
+           "WHERE BiasMotivation = %s")
     return [x[u'BiasMotivationId'] for x in readWithParams(SQL, params)][0]
 
 def getVictimTypeId(params):
     SQL = ("SELECT VictimTypeId "
            "FROM VictimTypes "
-           "WHERE VictimTypeName = %s")
+           "WHERE VictimType = %s")
     return [x[u'VictimTypeId'] for x in readWithParams(SQL, params)][0]
 
 @app.errorhandler(404)
@@ -167,6 +170,14 @@ def SelectRaceCount(race):
 def SelectRaces():
     sql = "SELECT DISTINCT Race FROM OffenderRace"
     return [ x[u'Race'] for x in (read(sql)) ]
+
+def SelectBiasMotivation():
+    sql = "SELECT DISTINCT BiasMotivation FROM BiasMotivations"
+    return [ x[u'BiasMotivation'] for x in (read(sql)) ]
+
+def SelectVictimTypes():
+    sql = "SELECT DISTINCT VictimType FROM VictimTypes"
+    return [ x[u'VictimType'] for x in (read(sql)) ]
 
 def getKeys(data, target):
     if target.has_key('keys'):
