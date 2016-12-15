@@ -99,6 +99,7 @@ def insert():
     races = SelectRaces()
     victim = SelectVictimTypes()
     bias = SelectBiasMotivation()
+    offenseTypes = SelectOffenseTypes()
     if request.method == 'POST':
         print("start")
         try:
@@ -115,7 +116,7 @@ def insert():
 
         except Exception as e:
             return ("", 400, "")
-    return render_template('insert.html', races=races, victim=victim, bias=bias, result=result)
+    return render_template('insert.html', offenseTypes = offenseTypes, races=races, victim=victim, bias=bias, result=result)
 
 def findIncident(params):
     SQL = ("SELECT * FROM Incidents "
@@ -190,6 +191,10 @@ def SelectBiasMotivation():
 def SelectVictimTypes():
     sql = "SELECT DISTINCT VictimType FROM VictimTypes"
     return [ x[u'VictimType'] for x in (read(sql)) ]
+
+def SelectOffenseTypes():
+    sql = "SELECT DISTINCT OffenseTypeName FROM OffenseTypes"
+    return [x[u'OffenseTypeName'] for x in (read(sql))]
 
 def getKeys(data, target):
     if target.has_key('keys'):

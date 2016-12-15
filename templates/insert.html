@@ -22,6 +22,11 @@
         <br />
         Ordinal:<input type="text" name="Ordinal1">
         OffenseType:<input type="text" name="OffenseType1">
+        OffenseType:<select name="OffenseType1">
+			{% for offenseType in offenseTypes %}
+            	<option value="{{ offenseType }}">{{ offenseType }}</option>
+            {% endfor %}
+		</select>
         NumberOfVictims:<input type="text" name="NumberOfVictims1">
         <br />
         BiasMotivation:<select name="BiasMotivation1">
@@ -37,7 +42,11 @@
         <br />
         <br />
         Ordinal:<input type="text" name="Ordinal2">
-        OffenseType:<input type="text" name="OffenseType2">
+        OffenseType:<select name="OffenseType2">
+			{% for offenseType in offenseTypes %}
+            	<option value="{{ offenseType }}">{{ offenseType }}</option>
+            {% endfor %}
+        </select>
         NumberOfVictims:<input type="text" name="NumberOfVictims2">
         <br />
         BiasMotivation:<select name="BiasMotivation2">
@@ -53,7 +62,11 @@
         <br />
         <br />
         Ordinal:<input type="text" name="Ordinal3">
-        OffenseType:<input type="text" name="OffenseType3">
+        OffenseType:<select name="OffenseType3">
+			{% for offenseType in offenseTypes %}
+            	<option value="{{ offenseType }}">{{ offenseType }}</option>
+            {% endfor %}
+        </select>
         NumberOfVictims:<input type="text" name="NumberOfVictims3">
         <br />
         BiasMotivation:<select name="BiasMotivation3">
@@ -69,7 +82,11 @@
         <br />
         <br />
         Ordinal:<input type="text" name="Ordinal4">
-        OffenseType:<input type="text" name="OffenseType4">
+        OffenseType:<select name="OffenseType4">
+			{% for offenseType in offenseTypes %}
+            	<option value="{{ offenseType }}">{{ offenseType }}</option>
+            {% endfor %}
+        </select>
         NumberOfVictims:<input type="text" name="NumberOfVictims4">
         <br />
         BiasMotivation:<select name="BiasMotivation4">
