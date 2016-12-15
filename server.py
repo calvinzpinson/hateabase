@@ -95,6 +95,7 @@ def badRequest(error):
 
 @app.route('/insert', methods=['GET', 'POST'])
 def insert():
+    result = ""
     races = SelectRaces()
     victim = SelectVictimTypes()
     bias = SelectBiasMotivation()
@@ -102,6 +103,7 @@ def insert():
         print("start")
         try:
             params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], getOffenderRaceId(request.form['OffenderRace'])]
+            print(findIncident(params))
             addIncident(params)
             print("incident added")
 
@@ -113,7 +115,17 @@ def insert():
 
         except Exception as e:
             return ("", 400, "")
-    return render_template('insert.html', races=races, victim=victim, bias=bias)
+    return render_template('insert.html', races=races, victim=victim, bias=bias, result=result)
+
+def findIncident(params):
+    SQL = ("SELECT * FROM Incidents "
+           "WHERE ORI = %s "
+           "AND IncidentId = %s "
+           "AND IncidentDate = %s "
+           "AND TotalVictims = %s "
+           "AND TotalOffender = %s "
+           "AND OffenderRaceId = %s")
+    return readWithParams(SQL, params)
 
 def addIncident(params):
     SQL = ("INSERT INTO Incidents "

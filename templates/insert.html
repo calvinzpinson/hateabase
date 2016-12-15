@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Insert{% endblock %}
 {% block body %}
-    <h1>Hateabase</h1>
-    <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from 2014.</h3>
+    <div class="jumbotron">
+        <h1>Hateabase</h1>
+        <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from 2014.</h3>
+    </div>
     <h2>Report an incident</h2>
     <form name="Incidents" action="" method='POST'>
         ORI:<input type="text" name="ORI">
@@ -17,9 +19,11 @@
             {% endfor %}
 		</select>
         <br />
+        <br />
         Ordinal:<input type="text" name="Ordinal1">
         OffenseType:<input type="text" name="OffenseType1">
         NumberOfVictims:<input type="text" name="NumberOfVictims1">
+        <br />
         BiasMotivation:<select name="BiasMotivation1">
             {% for b in bias %}
                 <option value="{{ b }}">{{ b }}</option>
@@ -31,9 +35,11 @@
             {% endfor %}
         </select>
         <br />
+        <br />
         Ordinal:<input type="text" name="Ordinal2">
         OffenseType:<input type="text" name="OffenseType2">
         NumberOfVictims:<input type="text" name="NumberOfVictims2">
+        <br />
         BiasMotivation:<select name="BiasMotivation2">
             {% for b in bias %}
                 <option value="{{ b }}">{{ b }}</option>
@@ -45,9 +51,11 @@
             {% endfor %}
         </select>
         <br />
+        <br />
         Ordinal:<input type="text" name="Ordinal3">
         OffenseType:<input type="text" name="OffenseType3">
         NumberOfVictims:<input type="text" name="NumberOfVictims3">
+        <br />
         BiasMotivation:<select name="BiasMotivation3">
             {% for b in bias %}
                 <option value="{{ b }}">{{ b }}</option>
@@ -59,9 +67,11 @@
             {% endfor %}
         </select>
         <br />
+        <br />
         Ordinal:<input type="text" name="Ordinal4">
         OffenseType:<input type="text" name="OffenseType4">
         NumberOfVictims:<input type="text" name="NumberOfVictims4">
+        <br />
         BiasMotivation:<select name="BiasMotivation4">
             {% for b in bias %}
                 <option value="{{ b }}">{{ b }}</option>
@@ -72,7 +82,10 @@
                 <option value="{{ b }}">{{ b }}</option>
             {% endfor %}
         </select>
+        <br />
         <button type="submit" method="post">Submit</button>
+        <br />
+        {{ result }}
     </form>
     {% if result %}
         <h4>{{ result }} </h4>
