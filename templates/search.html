@@ -37,17 +37,17 @@
 
                     var htm = ""
                     
-                    htm += "<tr>"
-                        keys.forEach(function(val, key, keyList) {
-                            htm += "<td class=\"result-sty\">" + val.replace( /([A-Z])/g, " $1" ) + "</td>";
-                        });
-                        htm += "</tr>"
+                    htm += "<tr>";
+                    keys.forEach(function(val, key, keyList) {
+                        htm += "<td class=\"result-sty\">" + val.replace( /([A-Z])/g, " $1" ) + "</td>";
+                    });
+                    htm += "</tr>";
                     data.forEach(function(dict, index, dataList) {
-                        htm += "<tr>"
+                        htm += "<tr>";
                         keys.forEach(function(val, key, keyList) {
                             htm += "<td class=\"result-sty\">" + dict[val] + "</td>";
                         });
-                        htm += "</tr>"
+                        htm += "</tr>";
                     });
                     results.html(htm);
 
@@ -55,6 +55,8 @@
                         results.removeClass("empty");
                     }
                 } else {
+                    var results = $("table#results");
+                    results.html("");
                     results.addClass("empty");
                 }
             });
