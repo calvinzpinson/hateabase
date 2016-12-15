@@ -1,8 +1,20 @@
 table#results {
-    border: 1px solid black;
+    width: 100%;
+}
 
+.result-sty {
+    border: 1px solid black;
+    padding: 5px;
 }
 
 table#results.empty {
     display: none;
+}
+
+.by-chooser {
+    display: none;
+}
+
+.active {
+    display: inline !important;
 }

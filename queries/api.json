@@ -5,48 +5,53 @@
                 "select": "SELECT COUNT(*) AS NumberOfOffenses, BiasMotivation ",
                 "from": "FROM Offenses, BiasMotivations ",
                 "where": "WHERE Offenses.BiasMotivationID = BiasMotivations.BiasMotivationId ",
-                "group": "GROUP BY BiasMotivation"
+                "group": "GROUP BY BiasMotivation ",
+                "order": "ORDER BY COUNT(*)"
             },
             "params": [],
-            "key": ["BiasMotivation", "NumberOfOffenses"]
+            "keys": ["BiasMotivation", "NumberOfOffenses"]
         },
         "group": {
             "query": {
                 "select": "SELECT COUNT(*) AS NumberOfOffenses, OffenseTypeGroup ",
                 "from": "FROM Offenses, OffenseTypeGroups, OffenseTypes ",
                 "where": "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId ",
-                "group": "GROUP BY OffenseTypeGroups.OffenseTypeGroupId"
+                "group": "GROUP BY OffenseTypeGroups.OffenseTypeGroupId ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key": ["OffenseTypeGroup", "NumberOfOffenses"]
+            "keys": ["OffenseTypeGroup", "NumberOfOffenses"]
         },
         "groupid": {
             "query": {
                 "select": "SELECT COUNT(*) AS NumberOfOffenses, OffenseTypeGroup ",
                 "from": "FROM Offenses, OffenseTypeGroups, OffenseTypes ",
-                "where": "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId AND OffenseTypeGroups.OffenseTypeGroupId = %s"
+                "where": "WHERE Offenses.OffenseTypeId = OffenseTypes.OffenseTypeId AND OffenseTypes.OffenseTypeGroupId = OffenseTypeGroups.OffenseTypeGroupId AND OffenseTypeGroups.OffenseTypeGroupId = %s ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": ["groupid"],
-            "key": ["OffenseTypeGroups", "NumberOfOffenses"]
+            "keys": ["OffenseTypeGroups", "NumberOfOffenses"]
         },
         "incident": {
             "query": {
-                "select": "SELECT IncidentId, COUNT(*) as NumberOffenses ",
+                "select": "SELECT IncidentId, COUNT(*) as NumberOfOffenses ",
                 "from": "FROM Offenses ",
-                "group": "GROUP BY IncidentId"
+                "group": "GROUP BY IncidentId ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key": ["IncidentId", "NumberOfOffenses"]
+            "keys": ["IncidentId", "NumberOfOffenses"]
         },
         "victimtype": {
             "query": {
                 "select": "SELECT COUNT(*) as NumberVictims, VictimType ",
                 "from": "FROM Offenses, VictimTypes ",
                 "where": "WHERE Offenses.VictimTypeId = VictimTypes.VictimTypeId ",
-                "group": "GROUP BY VictimType"
+                "group": "GROUP BY VictimType ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key": ["VictimType", "NumberOfOffenses"]
+            "keys": ["VictimType", "NumberOfOffenses"]
         }
     },
     "incident": {
@@ -54,38 +59,42 @@
             "query": {
                 "select": "SELECT COUNT(*) AS NumberOfIncidents, MONTH(IncidentDate) AS IncidentMonth ",
                 "from": "FROM Incidents ",
-                "group": "GROUP BY MONTH(IncidentDate)"
+                "group": "GROUP BY MONTH(IncidentDate) ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key": ["IncidentMonth", "NumberOfIncidents"]
+            "keys": ["IncidentMonth", "NumberOfIncidents"]
         },
         "offenderrace": {
             "query": {
                 "select": "SELECT COUNT(*) AS NumberOfIncidents, Race ",
                 "from": "FROM Incidents, OffenderRace ",
                 "where": "WHERE Incidents.OffenderRaceId = OffenderRace.OffenderRaceId ",
-                "group": "GROUP BY Race"
+                "group": "GROUP BY Race ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key":["Race", "NumberOfIncidents"]
+            "keys":["Race", "NumberOfIncidents"]
         },
         "totaloffenders": {
             "query": {
                 "select": "SELECT COUNT(*) AS NumberOfIncidents, TotalOffenders ",
                 "from": "FROM Incidents ",
-                "group": "GROUP BY TotalOffenders"
+                "group": "GROUP BY TotalOffenders ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key": ["TotalOffenders", "NumberOfIncidents"]
+            "keys": ["TotalOffenders", "NumberOfIncidents"]
         },
         "totalvictims": {
             "query": {
                 "select": "SELECT COUNT(*) AS NumberOfIncidents, TotalVictims ",
                 "from": "FROM Incidents ",
-                "group": "GROUP BY TotalVictims"
+                "group": "GROUP BY TotalVictims ",
+                "order": "ORDER BY COUNT(*) DESC"
             },
             "params": [],
-            "key": ["TotalVictims", "NumberOfIncidents"]
+            "keys": ["TotalVictims", "NumberOfIncidents"]
         }
     },
     "totalvictims": {
@@ -93,7 +102,8 @@
             "query": {
                 "select": "SELECT SUM(TotalVictims) as NumberVictims, IncidentDate ",
                 "from": "FROM Incidents ",
-                "group": "GROUP BY IncidentDate"
+                "group": "GROUP BY IncidentDate ",
+                "order": "ORDER BY COUNT(*)"
             },
             "params": [],
             "key": ["IncidentDate", "NumberVictims"]
@@ -102,13 +112,14 @@
     "victimtype": {
         "biasmotivation": {
             "query": {
-                "select": "SELECT COUNT(*) as NumberVictims, VictimType ",
+                "select": "SELECT COUNT(*) as NumberOfVictims, VictimType ",
                 "from": "FROM Offenses, BiasMotivations, VictimTypes ",
                 "where": "WHERE Offenses.BiasMotivationId = BiasMotivations.BiasMotivationId AND Offenses.VictimTypeId = VictimTypes.VictimTypeId AND BiasMotivations.BiasMotivation = %s ",
-                "group": "GROUP BY VictimType"
+                "group": "GROUP BY VictimType ",
+                "order": "ORDER BY COUNT(*)"
             },
             "params": ["bias"],
-            "key": ["VictimType", "IncidentDate"]
+            "keys": ["VictimType", "NumberOfVictims"]
         }
     },
     "app": {
@@ -117,8 +128,7 @@
                 "select": "SELECT * ",
                 "from": "FROM ((((((Incidents NATURAL JOIN Offenses) NATURAL JOIN OffenderRace) NATURAL JOIN OffenseTypes) NATURAL JOIN OffenseTypeGroups) NATURAL JOIN BiasMotivations) NATURAL JOIN BiasMotivationGroups) NATURAL JOIN VictimTypes"
             },
-            "params": [],
-            "key": []
+            "params": []
         }
     }
 }

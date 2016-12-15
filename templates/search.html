@@ -6,28 +6,24 @@
     <h1>Hateabase</h1>
     <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from 2014.</h3>
     <h2>Get statistics about:</h2>
-    <form name="getter">
-        <input type="hidden" value=0 name="id" />
+    <form name="info">
         <select name="get-choice" id="get-chooser">
             <option value="">Get</option>
             {% for obj in api %}
                 <option value="{{ obj.val }}">{{ obj.title }}</option>
             {% endfor %}
         </select>
+        {% for obj in api %}
+        <select name="by-choice-{{ obj.val }}" id="by-chooser-{{ obj.val }}" class="by-chooser">
+            <option value="">By</option>
+            {% for data in obj.attributes %}
+                <option value="{{ data.val }}">{{ data.title }}</option>
+            {% endfor %}
+        </select>
+        {% endfor %}
     </form>
-    {% for obj in api %}
-        <form name="by-{{ obj.val }}">
-            <input type="hidden" value=1 name="id" />
-            <select name="by-choice-{{ obj.val }}" id="by-chooser-{{ obj.val }}">
-                <option value="">By</option>
-                {% for data in obj.attributes %}
-                    <option value="{{ data.val }}">{{ data.title }}</option>
-                {% endfor %}
-            </select>
-        </form>
-    {% endfor %}
     <button id="sender">Query</button>
-    <table id="results" class="empty">
+    <table id="results" class="result-sty empty">
     </table>
     <script type="text/javascript">
         var snore = new snorlax('http://localhost:5000/hateabase/api/v1.0');
@@ -41,17 +37,17 @@
 
                     var htm = ""
                     
-                    htm += "<tr>"
-                        keys.forEach(function(val, key, keyList) {
-                            htm += "<td>" + val + "</td>";
-                        });
-                        htm += "</tr>"
+                    htm += "<tr>";
+                    keys.forEach(function(val, key, keyList) {
+                        htm += "<td class=\"result-sty\">" + val.replace( /([A-Z])/g, " $1" ) + "</td>";
+                    });
+                    htm += "</tr>";
                     data.forEach(function(dict, index, dataList) {
-                        htm += "<tr>"
+                        htm += "<tr>";
                         keys.forEach(function(val, key, keyList) {
-                            htm += "<td>" + dict[val] + "</td>";
+                            htm += "<td class=\"result-sty\">" + dict[val] + "</td>";
                         });
-                        htm += "</tr>"
+                        htm += "</tr>";
                     });
                     results.html(htm);
 
@@ -59,9 +55,17 @@
                         results.removeClass("empty");
                     }
                 } else {
+                    var results = $("table#results");
+                    results.html("");
                     results.addClass("empty");
                 }
             });
         });
+
+        $("select#get-chooser").change(function() {
+            $("select.active").toggleClass("active");
+            var getter = $("select#get-chooser").val();
+            $("select#by-chooser-" + getter).toggleClass("active");
+        })
     </script>
 {% endblock %}

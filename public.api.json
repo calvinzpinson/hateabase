@@ -14,6 +14,10 @@
             {
                "val": "incident",
                "title": "Incident" 
+            },
+            {
+                "val":"victimtype",
+                "title":"Victim Type"
             }
         ]
     },
@@ -22,8 +26,20 @@
         "title": "Incident",
         "attributes": [
             {
-                "val": "biasmotivation",
-                "title": "Bias Motivation"
+                "val": "month",
+                "title": "Month"
+            },
+            {
+                "val": "offenderrace",
+                "title": "Offender Race"
+            },
+            {
+                "val": "totaloffenders",
+                "title": "Total Offenders"
+            },
+            {
+                "val": "totalvictims",
+                "title": "Total Victims"
             }
         ]
     },
@@ -32,18 +48,8 @@
         "title": "Total Victims",
         "attributes": [
             {
-                "val": "biasmotivation",
-                "title": "Bias Motivation"
-            }
-        ]
-    },
-    {
-        "val": "victimtype",
-        "title": "Victim Type",
-        "attributes": [
-            {
-                "val": "biasmotivation",
-                "title": "Bias Motivation"
+                "val": "date",
+                "title": "Date"
             }
         ]
     }
