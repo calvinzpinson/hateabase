@@ -19,7 +19,11 @@ queryJsonObject = None
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+        return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/hateabase/api/v1.0/insert/', methods=["POST"])
 def insertOffenses():
@@ -32,7 +36,7 @@ def insertOffenses():
     except Exception as e:
         return "Invalid request:" + e, 400
 
-@app.route('/hateabase/', methods=['GET'])
+@app.route('/search/', methods=['GET'])
 def hateabase():
     global apiJsonObject
     with open('public.api.json', 'r') as f:
@@ -75,7 +79,7 @@ def getBy(get, by):
 def badRequest(error):
     return render_template('error.html', code=400)
 
-@app.route('/hateabase/insert', methods=['GET', 'POST'])
+@app.route('/insert', methods=['GET', 'POST'])
 def insert():
     if request.method == 'POST':
         params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], request.form['OffenderRace']]
