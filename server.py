@@ -82,17 +82,23 @@ def badRequest(error):
 @app.route('/insert', methods=['GET', 'POST'])
 def insert():
     if request.method == 'POST':
-        params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], request.form['OffenderRace']]
-        addIncident(params)
+        try:
+            params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], request.form['OffenderRace']]
+            addIncident(params)
 
-        for i in range(1, 4):
-            if request.form['Ordinal' + str(i)]:
-                offenseparams = [request.form['ORI'], request.form['IndicentId'], request.form['Ordinal' + i], getOffenseTypeId(request.form['OffenseType']), request.form['NumberOfVictims'], getBiasMotivationId(request.form['BiasMotivationId']), getVictimTypeId(request.form['VictimType'])]
+            for i in range(1, 4):
+                if request.form['Ordinal' + str(i)]:
+                    offenseparams = [request.form['ORI'], request.form['IndicentId'], request.form['Ordinal' + i], getOffenseTypeId(request.form['OffenseType']), request.form['NumberOfVictims'], getBiasMotivationId(request.form['BiasMotivationId']), getVictimTypeId(request.form['VictimType'])]
+                    addOffense(offenseparams)
 
+        except Exception as e:
+            return ("", 400, "")
     return render_template('insert.html')
 
 
+
 def addIncident(params):
+    params[5] = getOffenderRaceId([params[5]])
     SQL = ("INSERT INTO Incidents "
            "VALUES "
            "(%s, %s, %s, %s, %s, %s)")
@@ -103,6 +109,12 @@ def addOffense(params):
            "VALUES "
            "(%s, %s, %s, %s, %s, %s, %s)")
     executeWithParams(SQL, params)
+
+def getOffenderRaceId(params):
+    SQL = ("SELECT OffenderRaceId "
+           "FROM OffenderRace "
+           "WHERE Race = %s")
+    return [x[u'OffenseTypeId'] for x in readWithParams(SQL, params)][0]
 
 def getOffenseTypeId(params):
     SQL = ("SELECT OffenseTypeId "
