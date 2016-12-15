@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Search{% endblock %}
 {% block body %}
+    <link rel="stylesheet" type="text/css" href="/static/search.css" />
     <script src="/static/snorlax.js"></script>
     <h1>Hateabase</h1>
     <h3>This website can be used to get statistics about hate crimes commited in the US based on the FBI dataset from _______.</h3>
@@ -26,7 +27,7 @@
         </form>
     {% endfor %}
     <button id="sender">Query</button>
-    <table id="results">
+    <table id="results" class="empty">
     </table>
     <script type="text/javascript">
         var snore = new snorlax('http://localhost:5000/hateabase/api/v1.0');
@@ -53,6 +54,12 @@
                         htm += "</tr>"
                     });
                     results.html(htm);
+
+                    if (results.hasClass("empty")) {
+                        results.removeClass("empty");
+                    }
+                } else {
+                    results.addClass("empty");
                 }
             });
         });

@@ -1,0 +1,8 @@
+table#results {
+    border: 1px solid black;
+
+}
+
+table#results.empty {
+    display: none;
+}
