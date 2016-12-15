@@ -102,7 +102,7 @@ def insert():
     if request.method == 'POST':
         print("start")
         try:
-            params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], request.form['TotalOffenders'], getOffenderRaceId(request.form['OffenderRace'])]
+            params = [request.form['ORI'], request.form['IncidentId'], request.form['IncidentDate'], request.form['TotalVictims'], getOffenderRaceId(request.form['OffenderRace']), request.form['TotalOffenders']]
             print(findIncident(params))
             addIncident(params)
             print("incident added")
@@ -120,11 +120,11 @@ def insert():
 def findIncident(params):
     SQL = ("SELECT * FROM Incidents "
            "WHERE ORI = %s "
-           "AND IncidentId = %s "
+           "AND IncidentNumber = %s "
            "AND IncidentDate = %s "
            "AND TotalVictims = %s "
-           "AND TotalOffender = %s "
-           "AND OffenderRaceId = %s")
+           "AND OffenderRaceId = %s "
+           "AND TotalOffenders = %s ")
     return readWithParams(SQL, params)
 
 def addIncident(params):
